@@ -1,20 +1,21 @@
 import mongoose from 'mongoose'
 import { env } from './env'
+import { logger } from '../utils/logger'
 
 export const connectDatabase = async () => {
   try {
     await mongoose.connect(env.MONGODB_URI)
-    console.log('MongoDB connected')
+    logger.info('MongoDB connected')
   } catch (error) {
-    console.error('MongoDB connection failed', error)
+    logger.error({ err: error }, 'MongoDB connection failed')
     process.exit(1)
   }
 
   mongoose.connection.on('disconnected', () => {
-    console.warn('MongoDB disconnected')
+    logger.warn('MongoDB disconnected')
   })
 
   mongoose.connection.on('error', (err) => {
-    console.error('MongoDB error', err)
+    logger.error({ err }, 'MongoDB error')
   })
 }

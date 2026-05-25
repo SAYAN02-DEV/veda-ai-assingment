@@ -1,5 +1,6 @@
 import express from 'express'
 import { env } from './config'
+import { logger } from './utils/logger'
 const app = express()
 const port = env.PORT
 
@@ -8,7 +9,7 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-	console.log(`Server listening on port :${port}`)
+	logger.info(`Server listening on port :${port}`)
 })
 
 export { app }

@@ -1,5 +1,6 @@
 import Redis from 'ioredis'
 import { env } from './env'
+import { logger } from '../utils/logger'
 
 export const redis = new Redis({
   host: env.REDIS_HOST,
@@ -8,12 +9,12 @@ export const redis = new Redis({
   maxRetriesPerRequest: null,
   retryStrategy: (times) => {
     if (times > 5) {
-      console.error('Redis connection failed after 5 retries')
+      logger.error('Redis connection failed after 5 retries')
       return null
     }
     return Math.min(times * 500, 2000)
   },
 })
 
-redis.on('connect', () => console.log('Redis connected'))
-redis.on('error', (err) => console.error('Redis error', err))
+redis.on('connect', () => logger.info('Redis connected'))
+redis.on('error', (err) => logger.error({ err }, 'Redis error'))
