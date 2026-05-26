@@ -4,7 +4,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
+gcs-key.json
+src/test-gcs.ts
 # Logs
 logs/
 *.log
