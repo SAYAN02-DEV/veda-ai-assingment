@@ -12,6 +12,7 @@ const envSchema = z.object({
   GCS_PROJECT_ID: z.string(),
   GCS_BUCKET_NAME: z.string(),
   GENERATION_QUEUE_CONCURRENCY: z.string(),
+  PDF_QUEUE_CONCURRENCY: z.string(),
 })
 
 const parsed = envSchema.safeParse(process.env)
