@@ -40,6 +40,7 @@ export const Sidebar = () => {
               type="button"
               className="flex w-full items-center gap-2 rounded-lg px-3 py-[9px] text-[16px] leading-[22.4px] text-[rgba(94,94,94,0.8)] transition hover:bg-[#f0f0f0] hover:text-[#303030]"
               whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 420, damping: 24, mass: 0.2 }}
             >
               <img src={item.icon} alt="" className="h-5 w-5" />

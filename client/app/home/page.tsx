@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from 'react'
-import { EmptyState } from '../components/EmptyState'
 import { Sidebar } from '../components/Sidebar'
 import { TopBar } from '../components/TopBar'
+import AssignmentPage from '../components/AssignmentPage'
 
 export default function HomePage() {
 	const [activeMobileTab, setActiveMobileTab] = useState('Assignments')
@@ -45,8 +45,8 @@ export default function HomePage() {
 					</div>
 				</header>
 
-				<main className="absolute left-[320px] right-2 top-[86px] flex h-[678px] items-center justify-center px-4 max-[1280px]:static max-[1280px]:h-auto max-[1280px]:w-full max-[1280px]:px-0 max-md:mt-6 max-md:pb-28">
-					<EmptyState />
+				<main className="absolute left-[320px] right-6 top-[86px] flex h-[calc(100vh-120px)] flex-col max-[1280px]:static max-[1280px]:h-auto max-[1280px]:w-full max-[1280px]:px-0 max-md:mt-6 max-md:pb-28">
+					<AssignmentPage />
 				</main>
 			</div>
 
