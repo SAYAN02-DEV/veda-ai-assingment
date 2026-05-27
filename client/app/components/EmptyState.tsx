@@ -19,12 +19,9 @@ export const EmptyState = () => {
         </div>
       </div>
 
-      <button
-        className="inline-flex max-w-[90vw] items-center gap-1 rounded-[48px] border-0 bg-[#181818] px-6 py-3 text-[16px] font-medium leading-[22.4px] text-white outline outline-[1.5px] outline-white max-md:text-[14px]"
-        type="button"
-      >
-        <img src="/icons/icon_line/Plus.svg" alt="Add" />
-        <span>Create Your First Assignment</span>
+      <button>
+        {/* <img src="/icons/icon_line/Plus.svg" alt="Add" /> */}
+        {/* <span>Create Your First Assignment</span> */}
       </button>
     </section>
   )

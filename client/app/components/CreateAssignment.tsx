@@ -60,9 +60,11 @@ export default function CreateAssignment({ onBack, onNext }: CreateAssignmentPro
 	const [timeAllowed, setTimeAllowed] = useState('')
 	const [paperInstructions, setPaperInstructions] = useState('')
 	const [instructions, setInstructions] = useState('')
+	const [dueDate, setDueDate] = useState('')
 	const [fileKey, setFileKey] = useState<string | null>(null)
 	const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle')
 	const fileInputRef = useRef<HTMLInputElement | null>(null)
+	const dateInputRef = useRef<HTMLInputElement | null>(null)
 
 	const handleToggle = (index: number) => {
 		setOpenIndex(prev => (prev === index ? null : index))
@@ -123,6 +125,23 @@ export default function CreateAssignment({ onBack, onNext }: CreateAssignmentPro
 
 	const handleBrowseFiles = () => {
 		fileInputRef.current?.click()
+	}
+
+	const handleCalendarClick = () => {
+		const input = dateInputRef.current
+		if (!input) return
+		if (typeof input.showPicker === 'function') {
+			input.showPicker()
+			return
+		}
+		input.focus()
+	}
+
+	const formatDueDate = (value: string) => {
+		if (!value) return 'DD-MM-YYYY'
+		const [year, month, day] = value.split('-')
+		if (!year || !month || !day) return 'DD-MM-YYYY'
+		return `${day}-${month}-${year}`
 	}
 
 	const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -317,9 +336,24 @@ export default function CreateAssignment({ onBack, onNext }: CreateAssignmentPro
 
 									<div className="flex flex-col gap-2">
 										<div className="text-[16px] font-bold leading-[22.4px] text-[#303030]">Due Date</div>
-										<div className="flex h-11 items-center justify-between rounded-full border border-[#DADADA] px-4">
-											<span className="text-[16px] font-medium leading-[22.4px] text-[#A9A9A9]">DD-MM-YYYY</span>
+										<div
+											className="relative flex h-11 items-center justify-between rounded-full border border-[#DADADA] px-4"
+											role="button"
+											onClick={handleCalendarClick}
+										>
+											<span className={`text-[16px] font-medium leading-[22.4px] ${dueDate ? 'text-[#303030]' : 'text-[#A9A9A9]'}`}>
+												{formatDueDate(dueDate)}
+											</span>
 											<img src="/icons/Calendar_plus.svg" alt="Calendar" className="h-5 w-5" />
+											<input
+												ref={dateInputRef}
+												type="date"
+												value={dueDate}
+												onChange={(event) => setDueDate(event.target.value)}
+												className="absolute inset-0 h-full w-full opacity-0"
+												aria-label="Due date"
+												min={new Date().toISOString().slice(0, 10)}
+											/>
 										</div>
 									</div>
 
@@ -566,6 +600,7 @@ export default function CreateAssignment({ onBack, onNext }: CreateAssignmentPro
 											totalQuestions,
 											totalMarks,
 											questionTypes,
+											dueDate: dueDate || undefined,
 											instructions: instructions.trim() ? instructions.trim() : undefined,
 											fileKey: fileKey ?? undefined,
 										})

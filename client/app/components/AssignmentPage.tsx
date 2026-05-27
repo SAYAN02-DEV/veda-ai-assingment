@@ -35,6 +35,7 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
   const socketRef = useRef<Socket | null>(null)
   const [assignments, setAssignments] = useState<AssignmentItem[]>([])
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const apiBaseUrl = useMemo(() => api.baseUrl(), [])
 
@@ -234,6 +235,17 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
     return () => { isMounted = false }
   }, [view])
 
+  const filteredAssignments = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase()
+    if (!query) return assignments
+    return assignments.filter((assignment) => {
+      const subject = assignment.config?.subject ?? ''
+      const topic = assignment.config?.topic ?? ''
+      const date = assignment.createdAt?.slice(0, 10) ?? ''
+      return [subject, topic, date].some(value => value.toLowerCase().includes(query))
+    })
+  }, [assignments, searchTerm])
+
   // Early return AFTER all hooks
   if (view === 'list' && !isLoadingAssignments && assignments.length === 0) {
     return (
@@ -277,7 +289,10 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <span className="text-[14px] text-[#6b6b6b]">Creating assignment...</span>
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#1f1f1f]/20 border-t-[#1f1f1f]" />
+                <span className="text-[14px] text-[#6b6b6b]">Creating assignment...</span>
+              </div>
             </div>
           )}
         </div>
@@ -315,12 +330,13 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
               </div>
               <div className="flex w-[220px] items-center gap-3 md:w-[380px]">
                 <div className="flex h-11 w-full items-center gap-2 rounded-full border border-black/20 px-4">
-                  <img src="/icons/Lens.svg" alt="Search" className="h-5 w-5" />
+                  <img src="/icons/Search.svg" alt="Search" className="h-5 w-5" />
                   <input
                     type="text"
                     placeholder="Search Name"
-                    className="w-full bg-transparent text-[14px] font-bold leading-[19.6px] text-[#A9A9A9] placeholder:text-[#A9A9A9] focus:outline-none"
-                    disabled
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    className="w-full bg-transparent text-[14px] font-bold leading-[19.6px] text-[#303030] placeholder:text-[#A9A9A9] focus:outline-none"
                   />
                 </div>
               </div>
@@ -334,7 +350,7 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
           >
             <motion.div layout className="grid w-full grid-cols-2 gap-6 pb-28 max-[1280px]:grid-cols-1">
               <AnimatePresence mode="popLayout">
-                {assignments.map((assignment) => (
+                {filteredAssignments.map((assignment) => (
                   <motion.div
                     key={assignment._id}
                     layout

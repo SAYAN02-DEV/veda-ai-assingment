@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 import { api } from '../lib/api'
@@ -10,7 +10,7 @@ type DashboardShellProps = {
   activeTab: string
   topBarTitle: string
   topBarIcon: string
-  children: ReactNode | ((args: { showCreate: boolean; clearCreate: () => void }) => ReactNode)
+  children: ReactNode
   allowCreate?: boolean
 }
 
@@ -31,9 +31,7 @@ export default function DashboardShell({
   allowCreate = true,
 }: DashboardShellProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const [authChecked, setAuthChecked] = useState(() => Boolean(api.getAuthToken()))
-  const [showCreate, setShowCreate] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -55,25 +53,13 @@ export default function DashboardShell({
     router.replace('/login')
   }
 
-  useEffect(() => {
-    if (!allowCreate) return
-    const create = searchParams.get('create')
-    if (create === '1') {
-      setShowCreate(true)
-    }
-  }, [allowCreate, searchParams])
-
   const handleTabChange = (tab: string) => {
     const route = routeMap[tab]
     if (route) router.push(route)
   }
 
   const handleCreateClick = () => {
-    if (!allowCreate) {
-      router.push('/assignments?create=1')
-      return
-    }
-    setShowCreate(true)
+    router.push('/assignments?create=1')
   }
 
   if (!authChecked) return null
@@ -135,12 +121,7 @@ export default function DashboardShell({
         </header>
 
         <main className="absolute left-[320px] right-0.5 top-[86px] flex h-[calc(100vh-120px)] flex-col max-[1280px]:static max-[1280px]:h-auto max-[1280px]:w-full max-[1280px]:px-0 max-md:mt-6 max-md:pb-28">
-          {typeof children === 'function'
-            ? (children as (args: { showCreate: boolean; clearCreate: () => void }) => ReactNode)({
-                showCreate,
-                clearCreate: () => setShowCreate(false),
-              })
-            : children}
+          {children}
         </main>
       </div>
 
