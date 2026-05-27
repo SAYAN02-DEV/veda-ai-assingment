@@ -4,7 +4,15 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '../lib/api'
 
-export const TopBar = () => {
+type TopBarProps = {
+  title?: string
+  iconSrc?: string
+}
+
+export const TopBar = ({
+  title = 'Assignment',
+  iconSrc = '/icons/home_assingment_navbar.svg',
+}: TopBarProps) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isAuthed, setIsAuthed] = useState(false)
   const router = useRouter()
@@ -28,17 +36,26 @@ export const TopBar = () => {
     setMenuOpen(open => !open)
   }
 
+  const handleBack = () => {
+    router.back()
+  }
+
   return (
     <header className="absolute left-[320px] right-2 top-2 flex h-14 items-center gap-2.5 rounded-2xl bg-white/75 px-6 pr-3 max-[1280px]:static max-[1280px]:w-full">
       <div className="flex w-10 items-center">
-        <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white" type="button">
+        <button
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white"
+          type="button"
+          onClick={handleBack}
+          aria-label="Back"
+        >
           <img src="/icons/icon_line/Arrow_Left.svg" alt="Back" />
         </button>
       </div>
 
       <div className="flex items-center gap-2 text-[16px] font-semibold text-[#a9a9a9] whitespace-nowrap">
-        <img src="/icons/home_assingment_navbar.svg" alt="Assignment" />
-        <span>Assignment</span>
+        <img src={iconSrc} alt={title} />
+        <span>{title}</span>
       </div>
 
       <div className="ml-auto flex items-center gap-3 max-[768px]:w-full max-[768px]:justify-between">

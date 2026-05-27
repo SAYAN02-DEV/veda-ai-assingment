@@ -7,7 +7,7 @@ const redisUsesTls = redisUrl.startsWith('rediss://')
 
 export const redis = new Redis(redisUrl, {
   maxRetriesPerRequest: null,
-  tls: redisUsesTls ? {} : undefined,
+  tls: redisUsesTls ? {rejectUnauthorized: false} : undefined,
   retryStrategy: (times) => {
     if (times > 5) {
       logger.error('Redis connection failed after 5 retries')
