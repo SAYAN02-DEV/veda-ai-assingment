@@ -524,7 +524,7 @@ export default function CreateAssignment({ onBack, onNext }: CreateAssignmentPro
 												onClick={handleAddRow}
 											>
 											<span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2B2B2B]">
-												<img src="/icons/Plus.svg" alt="Add" className="h-4 w-4 invert" />
+													<img src="/icons/Plus.svg" alt="Add" className="h-4 w-4" />
 											</span>
 											Add Question Type
 										</button>
