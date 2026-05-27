@@ -8,7 +8,11 @@ import { logger } from './utils/logger'
 
 const app = express()
 
-app.use(helmet())
+app.use(helmet({
+  // Allow embedding the HTML paper preview inside the frontend iframe.
+  frameguard: false,
+  contentSecurityPolicy: false,
+}))
 app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }))
 app.use(express.json())
 app.use((req, res, next) => {

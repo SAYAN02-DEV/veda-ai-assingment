@@ -25,6 +25,11 @@ export default function AssignmentBox({
 			whileHover={{ scale: 1.02 }}
 			whileTap={{ scale: 0.98 }}
 			transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+			onClick={(event) => {
+				const target = event.target as HTMLElement
+				if (target.closest('[data-assignment-menu]')) return
+				onView?.()
+			}}
 			className="inline-flex h-full w-full cursor-pointer flex-col items-start justify-center gap-12 rounded-3xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
 		>
 			<div className="flex w-full flex-1 flex-col items-start justify-between gap-5">
@@ -38,12 +43,15 @@ export default function AssignmentBox({
 							</div>
 						</div>
 
-						<div className="relative">
+						<div className="relative" data-assignment-menu>
 							<button
 								type="button"
 								aria-label="Assignment actions"
 								onPointerDown={(event) => event.stopPropagation()}
-								onClick={() => setMenuOpen((open) => !open)}
+								onClick={(event) => {
+									event.stopPropagation()
+									setMenuOpen((open) => !open)
+								}}
 								className="relative h-6 w-6 cursor-pointer border-none bg-transparent p-0"
 							>
 								<span className="absolute left-[14px] top-[10px] h-1 w-1 rounded-full bg-[#A9A9A9]" />

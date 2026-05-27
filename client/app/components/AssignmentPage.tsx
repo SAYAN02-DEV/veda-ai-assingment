@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { animate, motion } from 'framer-motion'
+import { AnimatePresence, animate, motion } from 'framer-motion'
 import { io, type Socket } from 'socket.io-client'
 
 import AssignmentBox from './AssignmentBox'
@@ -114,7 +114,12 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
     setErrorMessage(null)
     try {
       const status = await api.getAssignmentStatus(id)
-      setPaperReady(Boolean(status?.resultId))
+      const ready = Boolean(status?.resultId)
+      setPaperReady(ready)
+      if (ready) {
+        setProgress(100)
+        setErrorMessage(null)
+      }
     } catch (error) {
       setErrorMessage((error as Error).message)
     }
@@ -143,12 +148,15 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
     })
 
     socket.on('job:processing', (_event: { message?: string }) => {
+      setErrorMessage(null)
       setProgress(10)
     })
     socket.on('job:progress', (event: { progress?: number; message?: string }) => {
+      setErrorMessage(null)
       if (typeof event.progress === 'number') setProgress(event.progress)
     })
     socket.on('job:done', () => {
+      setErrorMessage(null)
       setProgress(100)
       setPaperReady(true)
     })
@@ -166,6 +174,33 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
       socketRef.current = null
     }
   }, [assignmentId, socketBaseUrl, view])
+
+  useEffect(() => {
+    if (!assignmentId || view !== 'preview' || paperReady) return
+
+    let active = true
+    const pollStatus = async () => {
+      try {
+        const status = await api.getAssignmentStatus(assignmentId)
+        if (!active) return
+        if (status?.resultId) {
+          setPaperReady(true)
+          setProgress(100)
+          setErrorMessage(null)
+        }
+      } catch (error) {
+        if (active) setErrorMessage((error as Error).message)
+      }
+    }
+
+    const intervalId = window.setInterval(pollStatus, 3000)
+    pollStatus()
+
+    return () => {
+      active = false
+      window.clearInterval(intervalId)
+    }
+  }, [assignmentId, view, paperReady])
 
   useEffect(() => {
     if (view !== 'list') return
@@ -264,26 +299,28 @@ export default function AssignmentPage({ triggerCreate, onCreateTriggered }: Ass
             className="assignment-grid-scroll relative w-full flex-1 min-h-0 overflow-x-hidden overflow-y-auto"
             onWheel={handleGridWheel}
           >
-            <div className="grid w-full grid-cols-2 gap-6 pb-28 max-[1280px]:grid-cols-1">
-              {assignments.map((assignment) => (
-                <motion.div
-                  key={assignment._id}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ root: gridScrollRef, amount: 0.2, once: true }}
-                  transition={{ duration: 0.45, ease: 'easeOut' }}
-                >
-                  <AssignmentBox
-                    name={assignment.config?.topic ?? assignment.config?.subject ?? 'Assignment'}
-                    assignedOn={assignment.createdAt?.slice(0, 10) ?? '-'}
-                    dueDate={assignment.config?.dueDate?.slice(0, 10) ?? '-'}
-                    onView={() => handleViewAssignment(assignment._id)}
-                    onDelete={() => handleDeleteAssignment(assignment._id)}
-                  />
-                </motion.div>
-              ))}
-            </div>
-            <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#e5e5e5]/80 to-transparent" />
+            <motion.div layout className="grid w-full grid-cols-2 gap-6 pb-28 max-[1280px]:grid-cols-1">
+              <AnimatePresence mode="popLayout">
+                {assignments.map((assignment) => (
+                  <motion.div
+                    key={assignment._id}
+                    layout
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 24, scale: 0.98 }}
+                    transition={{ duration: 0.35, ease: 'easeOut' }}
+                  >
+                    <AssignmentBox
+                      name={assignment.config?.topic ?? assignment.config?.subject ?? 'Assignment'}
+                      assignedOn={assignment.createdAt?.slice(0, 10) ?? '-'}
+                      dueDate={assignment.config?.dueDate?.slice(0, 10) ?? '-'}
+                      onView={() => handleViewAssignment(assignment._id)}
+                      onDelete={() => handleDeleteAssignment(assignment._id)}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
             <div className="sticky bottom-3 left-0 right-0 z-10 flex w-full justify-center">
               <button
                 type="button"
