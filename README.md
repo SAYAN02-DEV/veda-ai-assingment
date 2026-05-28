@@ -53,7 +53,7 @@ veda-ai-assingment/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/SimantiGhosh/veda-ai-assingment.git
+git clone https://github.com/SAYAN02-DEV/veda-ai-assingment.git
 cd veda-ai-assingment
 ```
 
