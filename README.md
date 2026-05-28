@@ -119,7 +119,7 @@ The frontend will be available at `http://localhost:3000`.
 ---
 
 ## System Architecture
-<img width="1536" height="1024" alt="SYSTEM_DESIGN" src="https://github.com/user-attachments/assets/81bd39b6-938e-4587-8fd6-ad6060d8550b" />
+<img width="776" height="748" alt="image" src="https://github.com/user-attachments/assets/2afc6b09-01c0-4095-9f2f-81115a358369" />
 
 
 ## API Overview
